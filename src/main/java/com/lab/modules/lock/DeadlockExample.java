@@ -1,4 +1,4 @@
-package com.lab.lock;
+package com.lab.modules.lock;
 
 import org.springframework.stereotype.Service;
 
@@ -38,6 +38,7 @@ public class DeadlockExample {
         t2.start();
     }
 
+    public void avoidDeadlockRunner () { }
     private static void sleep(long millis) {
         try {
             Thread.sleep(millis);

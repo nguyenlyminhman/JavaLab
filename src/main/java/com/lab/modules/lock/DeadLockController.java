@@ -1,4 +1,4 @@
-package com.lab.lock;
+package com.lab.modules.lock;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +11,14 @@ public class DeadLockController {
     private DeadlockExample deadlockExample;
 
     @GetMapping("/lock")
-    public String runLock () {
+    public String runLock() {
         deadlockExample.deadlockRunner();
         return "locked";
     }
 
+    @GetMapping("/avoid")
+    public String avoidLock() {
+        deadlockExample.avoidDeadlockRunner();
+        return "avoid locked";
     }
+}
