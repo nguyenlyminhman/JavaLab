@@ -23,16 +23,10 @@ public class BulkInsertService {
         if (data == null || data.isEmpty()) return;
 
         List<List<CrawledProduct>> batches = partition(data, BATCH_SIZE);
-        long start = System.nanoTime();
 //      batches.parallelStream().forEach(this::insertBatch); // cái này chậm hơn khi dùng for
         for (List<CrawledProduct> batch : batches) {
             this.insertBatch(batch);
         }
-        long end = System.nanoTime();
-        long duration = end - start;
-
-        System.out.println("Execution time: " + duration + " ns");
-        System.out.println("Execution time: " + (duration / 1_000_000.0) + " ms");
     }
 
     @Transactional

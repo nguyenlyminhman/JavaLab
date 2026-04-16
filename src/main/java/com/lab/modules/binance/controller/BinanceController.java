@@ -21,4 +21,10 @@ public class BinanceController {
         List<CrawledProduct> rs = iBinanceService.crawlAndSaveTickerPrice(null);
         return rs;
     }
+
+    @GetMapping("/ticker/price/spring-batch")
+    public List<CrawledProduct> getTickerPriceBatch() throws Exception {
+        List<CrawledProduct> rs = iBinanceService.crawlAndSaveTickerPriceSpringBatch(null);
+        return rs;
+    }
 }
