@@ -1,5 +1,6 @@
 package com.lab.core.client;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class ExternalApiClient {
             String url,
             Map<String, String> headers,
             Map<String, Object> queryParams,
-            Class<T> responseType
+            ParameterizedTypeReference<T> responseType
     ) {
         try {
             RestClient.RequestHeadersSpec<?> request = restClient.get()
@@ -63,7 +64,7 @@ public class ExternalApiClient {
             String url,
             Map<String, String> headers,
             T requestBody,
-            Class<R> responseType
+            ParameterizedTypeReference<R> responseType
     ) {
         try {
             RestClient.RequestBodySpec request = restClient.post()

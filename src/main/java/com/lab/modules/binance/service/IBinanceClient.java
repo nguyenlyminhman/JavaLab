@@ -1,11 +1,10 @@
 package com.lab.modules.binance.service;
 
-import com.lab.entity.CoinEntity;
+import com.lab.modules.binance.dto.CrawledProduct;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IBinanceClient {
-    List<CoinEntity> getTickerPrice(String symbol);
+    List<CrawledProduct> getTickerPrice(String symbol);
 
 }

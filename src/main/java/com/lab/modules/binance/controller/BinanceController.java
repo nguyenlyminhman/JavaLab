@@ -1,6 +1,7 @@
 package com.lab.modules.binance.controller;
 
 import com.lab.entity.CoinEntity;
+import com.lab.modules.binance.dto.CrawledProduct;
 import com.lab.modules.binance.service.IBinanceService;
 import com.lab.modules.lock.DeadlockExample;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ public class BinanceController {
     private IBinanceService iBinanceService;
 
     @GetMapping("/ticker/price")
-    public List<CoinEntity> getTickerPrice() {
-        List<CoinEntity> rs = iBinanceService.crawlAndSaveTickerPrice(null);
+    public List<CrawledProduct> getTickerPrice() throws Exception {
+        List<CrawledProduct> rs = iBinanceService.crawlAndSaveTickerPrice(null);
         return rs;
     }
 }
