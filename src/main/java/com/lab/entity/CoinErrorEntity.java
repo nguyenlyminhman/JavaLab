@@ -14,27 +14,19 @@ import java.util.Date;
 @Setter
 @Data
 @Entity
-@Table(name = "coin")
-public class CoinEntity {
+@Table(name = "coin_error")
+public class CoinErrorEntity {
     @Id
     @Column(name = "id")
     private int id;
 
-    @Column(name = "symbol", length = 10)
     private String symbol;
 
-    @Column(name = "pricing", length = 25)
     private String pricing;
 
     @Column(name = "created_dt")
     private Date createdDt;
 
-    @Column(name = "created_by")
-    private String createdBy;
-
-    @Column(name = "updated_dt")
-    private Date updatedDt;
-
-    @Column(name = "updated_by")
-    private String updatedBy;
+    @Column(name = "raw_data")
+    private String rawData;
 }

@@ -1,5 +1,6 @@
 package com.lab.modules.binance.batch_process;
 
+import com.google.gson.Gson;
 import com.lab.entity.CoinEntity;
 import com.lab.modules.binance.dto.CrawledProduct;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -30,6 +32,7 @@ public class CoinBatchConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
 
     // ================= READER =================
     @Bean
@@ -101,16 +104,41 @@ public class CoinBatchConfig {
             @Override
             public void onSkipInWrite(CoinEntity item, Throwable t) {
                 System.err.println("WRITE ERROR: " + item + " | " + t.getMessage());
+                saveError(item, t);
             }
 
             @Override
             public void onSkipInProcess(CrawledProduct item, Throwable t) {
                 System.err.println("PROCESS ERROR: " + item + " | " + t.getMessage());
+                saveErrorRaw(item, t);
             }
 
             @Override
             public void onSkipInRead(Throwable t) {
                 System.err.println("READ ERROR: " + t.getMessage());
+            }
+
+            private void saveError(CoinEntity item, Throwable t) {
+                jdbcTemplate.update("""
+                INSERT INTO coin_error ( symbol, pricing, error_msg)
+                VALUES ( ?, ?, ?)
+            """,
+                        item.getSymbol(),
+                        item.getPricing(),
+                        t.getMessage()
+                );
+            }
+
+            private void saveErrorRaw(CrawledProduct item, Throwable t) {
+                jdbcTemplate.update("""
+                    INSERT INTO coin_error (symbol, pricing, error_msg, raw_data)
+                    VALUES (?, ?, ?, ?)
+                """,
+                        item.getSymbol(),
+                        item.getPrice(),
+                        t.getMessage(),
+                        new Gson().toJson(item)
+                );
             }
         };
     }
