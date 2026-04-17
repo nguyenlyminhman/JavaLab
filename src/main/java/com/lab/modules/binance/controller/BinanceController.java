@@ -2,10 +2,13 @@ package com.lab.modules.binance.controller;
 
 import com.lab.entity.CoinEntity;
 import com.lab.modules.binance.dto.CrawledProduct;
+import com.lab.modules.binance.service.IBatchJob;
 import com.lab.modules.binance.service.IBinanceService;
 import com.lab.modules.lock.DeadlockExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -15,6 +18,9 @@ public class BinanceController {
 
     @Autowired
     private IBinanceService iBinanceService;
+
+    @Autowired
+    private IBatchJob iBatchJob;
 
     @GetMapping("/ticker/price")
     public List<CrawledProduct> getTickerPrice() throws Exception {
@@ -26,5 +32,11 @@ public class BinanceController {
     public List<CrawledProduct> getTickerPriceBatch() throws Exception {
         List<CrawledProduct> rs = iBinanceService.crawlAndSaveTickerPriceSpringBatch(null);
         return rs;
+    }
+
+    @PostMapping("/ticker/price/spring-batch/restart/{executionId}")
+    public String restart(@PathVariable Integer executionId) throws Exception {
+        iBatchJob.handleRestartJob(executionId);
+        return "Restarted job with executionId = " + executionId;
     }
 }

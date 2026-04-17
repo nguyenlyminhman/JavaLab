@@ -20,9 +20,7 @@ public class CoinErrorEntity {
     @Column(name = "id")
     private int id;
 
-    private String symbol;
-
-    private String pricing;
+    private String batch;
 
     @Column(name = "created_dt")
     private Date createdDt;

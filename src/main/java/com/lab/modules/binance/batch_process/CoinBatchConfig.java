@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.SkipListener;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
@@ -25,7 +24,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableBatchProcessing
 @RequiredArgsConstructor
 public class CoinBatchConfig {
 
@@ -104,13 +102,13 @@ public class CoinBatchConfig {
             @Override
             public void onSkipInWrite(CoinEntity item, Throwable t) {
                 System.err.println("WRITE ERROR: " + item + " | " + t.getMessage());
-                saveError(item, t);
+                saveError("WRITE", item, t);
             }
 
             @Override
             public void onSkipInProcess(CrawledProduct item, Throwable t) {
                 System.err.println("PROCESS ERROR: " + item + " | " + t.getMessage());
-                saveErrorRaw(item, t);
+                saveErrorRaw("PROCESS", item, t);
             }
 
             @Override
@@ -118,24 +116,23 @@ public class CoinBatchConfig {
                 System.err.println("READ ERROR: " + t.getMessage());
             }
 
-            private void saveError(CoinEntity item, Throwable t) {
+            private void saveError(String batch, CoinEntity item, Throwable t) {
                 jdbcTemplate.update("""
-                INSERT INTO coin_error ( symbol, pricing, error_msg)
-                VALUES ( ?, ?, ?)
-            """,
-                        item.getSymbol(),
-                        item.getPricing(),
-                        t.getMessage()
+                    INSERT INTO coin_error (batch, error_msg, raw_data)
+                    VALUES ( ? , ?, ?)
+                """,
+                        batch,
+                        t.getMessage(),
+                        new Gson().toJson(item)
                 );
             }
 
-            private void saveErrorRaw(CrawledProduct item, Throwable t) {
+            private void saveErrorRaw(String batch, CrawledProduct item, Throwable t) {
                 jdbcTemplate.update("""
-                    INSERT INTO coin_error (symbol, pricing, error_msg, raw_data)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO coin_error (batch, error_msg, raw_data)
+                    VALUES ( ? , ?, ?)
                 """,
-                        item.getSymbol(),
-                        item.getPrice(),
+                        batch,
                         t.getMessage(),
                         new Gson().toJson(item)
                 );

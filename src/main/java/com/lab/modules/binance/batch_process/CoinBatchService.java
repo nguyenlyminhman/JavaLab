@@ -29,6 +29,7 @@ public class CoinBatchService {
         holder.setData(data);
 
         JobParameters params = new JobParametersBuilder()
+                .addString("jobName", "coin-import")
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
