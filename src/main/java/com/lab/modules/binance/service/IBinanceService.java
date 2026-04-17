@@ -7,4 +7,8 @@ import java.util.List;
 public interface IBinanceService {
     List<CrawledProduct> crawlAndSaveTickerPrice(String symbol) throws Exception;
     List<CrawledProduct> crawlAndSaveTickerPriceSpringBatch(String symbol) throws Exception;
+
+    String updateTickerPrice();
+
+    String updateTickerPriceWithCompletableFuture();
 }
