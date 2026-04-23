@@ -35,6 +35,7 @@ public class ActiveMqConfig {
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerUrl);
         factory.setUserName(username);
         factory.setPassword(password);
+
         // Cho phép deserialize class của bạn - BẮT BUỘC với ActiveMQ 5.15.9+
         factory.setTrustedPackages(java.util.List.of("com.lab"));
         return factory;
