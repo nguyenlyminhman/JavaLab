@@ -20,14 +20,12 @@ public class QueueProducer {
         this.queueJmsTemplate = queueJmsTemplate;
     }
 
-    // ── Gửi Object (auto-serialize sang JSON) ─────────────
     public void sendOrder(OrderMessage order) {
         log.info("Sending order to queue [{}]: orderId={}", orderQueue, order.getOrderId());
         queueJmsTemplate.convertAndSend(orderQueue, order);
         log.debug("Order sent successfully: {}", order);
     }
 
-    // ── Gửi kèm custom headers ────────────────────────────
     public void sendOrderWithPriority(OrderMessage order, int priority) {
         queueJmsTemplate.convertAndSend(orderQueue, order, message -> {
             message.setIntProperty("JMSXDeliveryCount", 0);
@@ -38,7 +36,6 @@ public class QueueProducer {
         log.info("High-priority order sent: {} (priority={})", order.getOrderId(), priority);
     }
 
-    // ── Gửi String đơn giản ───────────────────────────────
     public void sendTextMessage(String text) {
         queueJmsTemplate.convertAndSend(orderQueue, text);
     }

@@ -22,20 +22,20 @@ public class OrderMessage implements Serializable {  // Serializable bắt buộ
 
     private String orderId;
 
-    @NotNull(message = "Customer ID không được null")
+
     private String customerId;
 
-    @NotNull
+
     private String productName;
 
-    @Positive(message = "Quantity phải > 0")
+
     private Integer quantity;
 
     private BigDecimal totalAmount;
 
     private String status;    // PENDING, PROCESSING, COMPLETED, FAILED
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
     private LocalDateTime createdAt;
 
     // Factory method tiện lợi
