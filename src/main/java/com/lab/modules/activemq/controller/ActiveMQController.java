@@ -1,9 +1,9 @@
 package com.lab.modules.activemq.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lab.modules.activemq.dto.OrderMessage;
 import com.lab.modules.activemq.producer.QueueProducer;
 import com.lab.modules.activemq.producer.TopicProducer;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +22,14 @@ public class ActiveMQController {
     private final TopicProducer topicProducer;
 
     @PostMapping("/queue/order")
-    public ResponseEntity<Map<String, Object>> sendOrderToQueue(
-            @Valid @RequestBody OrderMessage order) {
+    public ResponseEntity<Map<String, Object>> sendOrderToQueue() {
 
-        if (order.getOrderId() == null || order.getOrderId().isBlank()) {
-            order = OrderMessage.createNew(
-                    order.getCustomerId(), order.getProductName(),
-                    order.getQuantity(), order.getTotalAmount());
-        }
+        OrderMessage order = OrderMessage.createNew(
+                "CUST-001",
+                "MacBook Pro M3",
+                1,
+                new BigDecimal("65000000")
+        );
 
         queueProducer.sendOrder(order);
 
@@ -40,27 +40,78 @@ public class ActiveMQController {
         ));
     }
 
-    @PostMapping("/queue/text")
-    public ResponseEntity<Map<String, String>> sendTextToQueue(
-            @RequestParam String text) {
+    @PostMapping("/queue/order/text")
+    public ResponseEntity<Map<String, String>> sendTextToQueue() {
+        String text = "Message send/received by ORDER_TEXT_QUEUE and processed successfully without any errors.";
         queueProducer.sendTextMessage(text);
         return ResponseEntity.ok(Map.of("status", "sent", "text", text));
     }
 
-    @PostMapping("/topic/broadcast")
-    public ResponseEntity<Map<String, Object>> broadcastToTopic(
-            @Valid @RequestBody OrderMessage order) {
+    @PostMapping("/queue/raw/text")
+    public ResponseEntity<Map<String, String>> sendTextToRawQueue() {
+        String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.";
+        queueProducer.sendTextRawQueue(text);
+        return ResponseEntity.ok(Map.of("status", "sent", "text", text));
+    }
 
-        topicProducer.broadcastOrderUpdate(order);
+    @PostMapping("/queue/order/priority")
+    public ResponseEntity<Map<String, Object>> sendToPriorityQueue() {
+
+        OrderMessage mockOrder = OrderMessage.createNew(
+                "CUST-001",
+                "MacBook Pro M3",
+                1,
+                new BigDecimal("65000000")
+        );
+
+        queueProducer.sendOrderWithPriority(mockOrder, "HIGH");
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Order with HIGH priority has been sent to queue",
+                "orderId", mockOrder.getOrderId()
+        ));
+    }
+
+    @PostMapping("/queue/order/retry")
+    public ResponseEntity<Map<String, Object>> sendToRetryQueue() throws JsonProcessingException {
+
+        OrderMessage mockOrder = OrderMessage.createNew(
+                "CUST-001",
+                "MacBook Pro M3 Lỗi",
+                1,
+                new BigDecimal("65000000")
+        );
+
+        queueProducer.sendTestDlqQueue(mockOrder);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Order Lỗi",
+                "orderId", mockOrder.getOrderId()
+        ));
+    }
+
+    @PostMapping("/topic/notification")
+    public ResponseEntity<Map<String, Object>> broadcastToTopic() {
+
+        OrderMessage mockOrder = OrderMessage.createNew(
+                "CUST-001",
+                "MacBook Pro M3",
+                1,
+                new BigDecimal("65000000")
+        );
+
+        topicProducer.broadcastOrderUpdate(mockOrder);
 
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Broadcast to topic subscribers",
-                "orderId", order.getOrderId()
+                "orderId", mockOrder.getOrderId()
         ));
     }
 
-    @GetMapping("/test")
+    @GetMapping("/both-queue-topic/test")
     public ResponseEntity<Map<String, Object>> sendTestMessage() {
         OrderMessage testOrder = OrderMessage.createNew(
                 "CUST-001",

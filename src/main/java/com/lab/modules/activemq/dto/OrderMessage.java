@@ -3,10 +3,7 @@ package com.lab.modules.activemq.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,6 +11,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderMessage implements Serializable {  // Serializable bắt buộc!
@@ -36,7 +35,6 @@ public class OrderMessage implements Serializable {  // Serializable bắt buộ
     private String status;    // PENDING, PROCESSING, COMPLETED, FAILED
 
 
-    private LocalDateTime createdAt;
 
     // Factory method tiện lợi
     public static OrderMessage createNew(String customerId, String product, int qty, BigDecimal amount) {
@@ -47,7 +45,6 @@ public class OrderMessage implements Serializable {  // Serializable bắt buộ
                 .quantity(qty)
                 .totalAmount(amount)
                 .status("PENDING")
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

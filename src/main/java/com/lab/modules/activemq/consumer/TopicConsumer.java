@@ -6,27 +6,28 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import static com.lab.modules.activemq.TopicList.*;
+
 @Slf4j
 @Component
 public class TopicConsumer {
 
-    @JmsListener(destination = "${app.jms.topic.notification}", containerFactory = "topicListenerFactory", subscription = "email-service" )
+    @JmsListener(destination = NOTIFICATION_TOPIC, containerFactory = "topicListenerFactory", subscription = "email-service" )
     public void handleEmailNotification(@Payload OrderMessage order) {
         log.info("[EMAIL-SERVICE] Sending email for order: {}", order.getOrderId());
-        // Gửi email...
+        // TODO: Gửi email...
     }
 
-    @JmsListener( destination = "${app.jms.topic.notification}", containerFactory = "topicListenerFactory", subscription = "sms-service")
+    @JmsListener( destination = NOTIFICATION_TOPIC, containerFactory = "topicListenerFactory", subscription = "sms-service")
     public void handleSmsNotification(@Payload OrderMessage order) {
         log.info("[SMS-SERVICE] Sending SMS for order: {}", order.getOrderId());
-        // Gửi SMS...
+        // TODO: Gửi SMS...
     }
 
-    @JmsListener( destination = "${app.jms.topic.notification}", containerFactory = "topicListenerFactory", subscription = "analytics-service")
+    @JmsListener( destination = NOTIFICATION_TOPIC, containerFactory = "topicListenerFactory", subscription = "analytics-service")
     public void handleAnalytics(@Payload OrderMessage order) {
-        log.info("[ANALYTICS] Recording order: {} - amount: {}",
-                order.getOrderId(), order.getTotalAmount());
-        // Ghi log analytics...
+        log.info("[ANALYTICS] Recording order: {} - amount: {}", order.getOrderId(), order.getTotalAmount());
+        // TODO: Ghi log analytics...
     }
 }
 
